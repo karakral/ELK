@@ -1,11 +1,12 @@
 package com.example.elkdemo.service;
 
 import com.example.elkdemo.aspect.ElasticsearchLogger;
+import com.example.elkdemo.config.LoggingConfig;
 import com.example.elkdemo.model.Customer;
 import com.example.elkdemo.repository.CustomerRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +19,18 @@ public class CustomerService {
     private final ElasticsearchLogger elasticsearchLogger;
 
     private final CustomerRepository customerRepository;
+    private final LoggingConfig loggingConfig;
+
+
+    @Value("${greeting.message}")
+    private String greetingMessage;
+
 
     @Autowired
-    public CustomerService(ElasticsearchLogger elasticsearchLogger, CustomerRepository customerRepository) {
+    public CustomerService(ElasticsearchLogger elasticsearchLogger, CustomerRepository customerRepository, LoggingConfig loggingConfig) {
         this.elasticsearchLogger = elasticsearchLogger;
         this.customerRepository = customerRepository;
+        this.loggingConfig = loggingConfig;
     }
 
     public List<Customer> getAllCustomers() {
@@ -37,6 +45,7 @@ public class CustomerService {
 
     public Customer createCustomer(Customer customer) {
         log.info("Creating new customer: {}", customer);
+        checkActiveMavenProfile();
         saveElkLog(customer);
         return customerRepository.save(customer);
     }
@@ -62,7 +71,13 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
+    private void checkActiveMavenProfile(){
+        System.out.println(greetingMessage);
+    }
+
     private void saveElkLog(Customer customer) {
-        elasticsearchLogger.logToElasticsearch("save", "success", customer.getFirstName(), customer.getLastName());
+        if (loggingConfig.isElkLoggingEnabled()) {
+            elasticsearchLogger.logToElasticsearch("save", "success", customer.getFirstName(), customer.getLastName());
+        }
     }
 }

@@ -12,6 +12,7 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="LOGSTASH"/>
+        <appender-ref ref="ELASTIC" condition="${elk.logging.enabled}" />
     </root>
 
     <logger name="com.example.elkdemo" level="DEBUG" additivity="false">

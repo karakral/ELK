@@ -98,4 +98,35 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<env>development</env>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources/dev</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<properties>
+				<env>production</env>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources/prod</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
+
 </project>

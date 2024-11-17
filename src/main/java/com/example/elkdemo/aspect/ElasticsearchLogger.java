@@ -15,23 +15,25 @@ public class ElasticsearchLogger {
     private final String ELASTICSEARCH_URL = "http://localhost:9200/application-logs/_doc";
 
     public void logToElasticsearch(String action, String status, Object... details) {
-        try {
-            JSONObject logJson = new JSONObject();
-            logJson.put("action", action);
-            logJson.put("status", status);
-            logJson.put("timestamp", System.currentTimeMillis());
 
-            for (int i = 0; i < details.length; i += 2) {
-                if (i + 1 < details.length && details[i] instanceof String) {
-                    logJson.put((String) details[i], details[i + 1]);
+            try {
+                //TODO Mahsun change details and generally refactor this class
+                JSONObject logJson = new JSONObject();
+                logJson.put("action", action);
+                logJson.put("status", status);
+                logJson.put("timestamp", System.currentTimeMillis());
+
+                for (int i = 0; i < details.length; i += 2) {
+                    if (i + 1 < details.length && details[i] instanceof String) {
+                        logJson.put((String) details[i], details[i + 1]);
+                    }
                 }
+                sendToElasticsearch(logJson);
+            } catch (Exception e) {
+                log.error("Failed to log to Elasticsearch", e);
             }
-            sendToElasticsearch(logJson);
-        } catch (Exception e) {
-            log.error("Failed to log to Elasticsearch", e);
-        }
-    }
 
+    }
     private void sendToElasticsearch(JSONObject logJson) {
         try {
             URL url = new URL(ELASTICSEARCH_URL);
