@@ -14,32 +14,32 @@ public class ElasticsearchLogger {
 
     private final String ELASTICSEARCH_URL = "http://localhost:9200/application-logs/_doc";
 
-    public void logToElasticsearch(String action, String status, Object... details) {
+    public void logToElasticsearch(String action, String status,String httpMethod, Object... bodyData) {
 
             try {
-                //TODO Mahsun change details and generally refactor this class
+                //TODO Mahsun  refactor this class
                 JSONObject logJson = new JSONObject();
                 logJson.put("action", action);
                 logJson.put("status", status);
                 logJson.put("timestamp", System.currentTimeMillis());
 
-                for (int i = 0; i < details.length; i += 2) {
-                    if (i + 1 < details.length && details[i] instanceof String) {
-                        logJson.put((String) details[i], details[i + 1]);
+                for (int i = 0; i < bodyData.length; i += 2) {
+                    if (i + 1 < bodyData.length && bodyData[i] instanceof String) {
+                        logJson.put((String) bodyData[i], bodyData[i + 1]);
                     }
                 }
-                sendToElasticsearch(logJson);
+                sendToElasticsearch(logJson, httpMethod);
             } catch (Exception e) {
                 log.error("Failed to log to Elasticsearch", e);
             }
 
     }
-    private void sendToElasticsearch(JSONObject logJson) {
+    private void sendToElasticsearch(JSONObject logJson, String httpMethod) {
         try {
             URL url = new URL(ELASTICSEARCH_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod(httpMethod);
             connection.setRequestProperty("Content-Type", "application/json");
 
             try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream())) {

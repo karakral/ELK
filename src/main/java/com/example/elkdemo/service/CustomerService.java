@@ -16,6 +16,13 @@ import java.util.Optional;
 @Service
 public class CustomerService {
 
+    private final static String HTTP_METHOD_POST = "POST";
+    private final static String STATUS = "status";
+    private final static String  STATE_SUCCESS = "success";
+    private final static String  ACTION_SAVE = "save";
+    private final static String  STATE_FAIL = "fail";
+    private final static String  HTTP_METHOD_GET = "GET";
+
     private final ElasticsearchLogger elasticsearchLogger;
 
     private final CustomerRepository customerRepository;
@@ -77,7 +84,7 @@ public class CustomerService {
 
     private void saveElkLog(Customer customer) {
         if (loggingConfig.isElkLoggingEnabled()) {
-            elasticsearchLogger.logToElasticsearch("save", "success", customer.getFirstName(), customer.getLastName());
+            elasticsearchLogger.logToElasticsearch(ACTION_SAVE, STATE_SUCCESS, HTTP_METHOD_POST, customer.getFirstName(), customer.getLastName());
         }
     }
 }
